@@ -1,2 +1,5 @@
 .venv
 .myvenv
+__pycahe__
+venv
+*.pyc
