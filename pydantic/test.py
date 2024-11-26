@@ -4,7 +4,7 @@ from annotated_types import Gt
 
 from pydantic import BaseModel, ValidationError, Field, field_validator
 from annotated_types import Annotated
-from typing import List
+from typing import List, Optional
 
 
 #Написать вложенную схему валидации данных, получить ошибки валидации
@@ -120,3 +120,34 @@ print(json)
 # Экспортируем данные в плоский формат
 model = user.model_dump()  
 print(model)
+
+#Написать скрипт, считывающий значения из переменных окружения с помощью pydantic-settings
+
+from pydantic_settings import BaseSettings
+
+class DatabaseSettings(BaseModel):
+    url: str
+    port: int = 5432  # Значение по умолчанию
+
+
+class LoggingSettings(BaseModel):
+    level: str = "INFO"
+    format: str = "%(asctime)s - %(levelname)s - %(message)s"
+
+
+class AppSettings(BaseSettings):
+    app_name: str
+    debug: bool = False
+    database: DatabaseSettings  
+    logging: Optional[LoggingSettings] = None  
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+
+try:
+    settings = AppSettings()
+except ValidationError as e:
+    print(e.json(indent=2)) 
+
